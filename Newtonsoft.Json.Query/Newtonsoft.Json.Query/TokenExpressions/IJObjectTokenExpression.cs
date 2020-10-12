@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.Query
+namespace Newtonsoft.Json.Query.TokenExpressions
 {
     public interface IJObjectTokenExpression
     {

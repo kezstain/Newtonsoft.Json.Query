@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Query.Tests
         {
             var query = @".Name='abcdef' & .ApprovedBy*='Joe' & (.Age>18 | (.Approved & .ApprovedBy != null)) & .Hobbies.Sports['Football' | 'Golf'] & .Scores[score=>score.PointsEarned=100] & Sum(.Scores[.PointsEarned])<=200";
             
-            var JObjectFilter = new JObjectFilter(query);
+            //var JObjectFilter = JObjectTokenExpressionBuilder.GetOperatorLogic(query);
         }
     }
 }

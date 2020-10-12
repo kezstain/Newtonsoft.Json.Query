@@ -7,8 +7,7 @@ namespace Newtonsoft.Json.Query
     {
         public static bool IsMatch(this JObject obj, string query)
         {
-            
-            var jObjectFilter = new JObjectFilter(query);
+            var jObjectFilter = JObjectTokenExpressionBuilder.GetOperatorLogic(query);
             return (bool)jObjectFilter.Evaluate(obj);
         }
     }
