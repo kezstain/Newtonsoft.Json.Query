@@ -23,16 +23,15 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             switch (_operation)
             {
                 case "=":
-                    var match = left.Equals(right);
-                    return new JValue(match);
+                    return new JValue(left.Equals(right));
                 case ">":
-                    var match2 = left.CompareTo(right)>0;
-                    return new JValue(match2);
+                    return new JValue(left.CompareTo(right)>0);
+                case ">=":
+                    return new JValue(left.CompareTo(right)>=0);
                 case "<":
-                    var match3 = left.CompareTo(right)<0;
-                    return new JValue(match3);
+                    return new JValue(left.CompareTo(right)<0);
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException(_operation);
         }
     }
 }

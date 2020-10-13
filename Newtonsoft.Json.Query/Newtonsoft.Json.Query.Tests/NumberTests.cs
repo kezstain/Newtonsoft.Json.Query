@@ -19,7 +19,17 @@ namespace Newtonsoft.Json.Query.Tests
         }
 
         [Test]
-        [Category("Int Greater Than Tests")]
+        [TestCase(".MediumValue>=.LowValue", true)]
+        [TestCase(".MediumValue>=.MediumValue2", true)]
+        [TestCase(".MediumValue>=.HighValue", false)]
+        [TestCase(".MediumValue>=1", true)]
+        [TestCase(".MediumValue>=2", true)]
+        [TestCase(".MediumValue>=3", false)]
+        //[TestCase(".MediumValue>'NaN'", false)] //TODO: Does this need safecheck
+        //[TestCase(".MediumValue>.NotAValue", false)] //TODO: Does this need safecheck
+        public void IntGreaterThanEqualToTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+
+        [Test]
         [TestCase(".MediumValue>.LowValue", true)]
         [TestCase(".MediumValue>.MediumValue2", false)]
         [TestCase(".MediumValue>.HighValue", false)]
@@ -31,7 +41,6 @@ namespace Newtonsoft.Json.Query.Tests
         public void IntGreaterThanTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 
         [Test]
-        [Category("Int Less Than Tests")]
         [TestCase(".MediumValue<.LowValue", false)]
         [TestCase(".MediumValue<.MediumValue2", false)]
         [TestCase(".MediumValue<.HighValue", true)]
@@ -42,8 +51,6 @@ namespace Newtonsoft.Json.Query.Tests
         public void IntLessThanTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 
         [Test]
-        [Category("Int Equals Tests")]
-        [Category("Int Less Than Tests")]
         [TestCase(".MediumValue=.LowValue", false)]
         [TestCase(".MediumValue=.MediumValue2", true)]
         [TestCase(".MediumValue=.HighValue", false)]
