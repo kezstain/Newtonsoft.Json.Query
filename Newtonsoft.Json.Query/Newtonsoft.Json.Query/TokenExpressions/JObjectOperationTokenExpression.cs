@@ -30,6 +30,8 @@ namespace Newtonsoft.Json.Query.TokenExpressions
                     return new JValue(left.CompareTo(right)>=0);
                 case "<":
                     return new JValue(left.CompareTo(right)<0);
+                case "<=":
+                    return new JValue(left.CompareTo(right)<=0);
             }
             throw new NotImplementedException(_operation);
         }

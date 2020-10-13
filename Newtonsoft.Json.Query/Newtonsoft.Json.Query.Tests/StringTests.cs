@@ -26,7 +26,17 @@ namespace Newtonsoft.Json.Query.Tests
         //"~=" //contains
 
         [Test]
-        [Category("String Greater Than Equal To Tests")]
+        [TestCase(".FirstName<=.LastName", false)] 
+        [TestCase(".LastName<=.FirstName", true)]
+        [TestCase(".FirstName<=.PreferredName", true)] //matches
+        //[TestCase(".FirstName>12", false)] //fails
+        [TestCase(".FirstName<='Adam'", false)]
+        [TestCase(".FirstName<='Zelda'", true)]
+        //[TestCase(".FirstName>'adam'", true)] //case insensitive
+        //[TestCase(".FirstName>'zelda'", false)] //case insensitive
+        public void StringLessThanEqualToTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+
+        [Test]
         [TestCase(".FirstName>=.LastName", true)] 
         [TestCase(".LastName>=.FirstName", false)]
         [TestCase(".FirstName>=.PreferredName", true)] //matches
@@ -38,7 +48,6 @@ namespace Newtonsoft.Json.Query.Tests
         public void StringGreaterThanEqualToTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 
         [Test]
-        [Category("String Greater Than Tests")]
         [TestCase(".FirstName>.LastName", true)] 
         [TestCase(".LastName>.FirstName", false)]
         [TestCase(".LastName>.PreferredName", false)] //matches
@@ -60,7 +69,6 @@ namespace Newtonsoft.Json.Query.Tests
         public void StringLessThanTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
         
         [Test]
-        [Category("String Equals Tests")]
         [TestCase(".FirstName=.PreferredName", true)]
         [TestCase(".FirstName=.LastName", false)]
         [TestCase(".Age=.LastName", false)]

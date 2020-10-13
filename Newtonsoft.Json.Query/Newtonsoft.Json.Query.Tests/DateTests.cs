@@ -18,6 +18,14 @@ namespace Newtonsoft.Json.Query.Tests
         }
         
         [Test]
+        [TestCase(".SubmittedOn<=.AuthorisedOn", false)]
+        [TestCase(".AuthorisedOn<=.SubmittedOn", true)]
+        [TestCase(".AuthorisedOn<=.ApprovedOn", true)]
+        [TestCase(".AuthorisedOn<='2012-01-19T07:22Z'", false)]
+        [TestCase(".AuthorisedOn<='2012-04-19T07:22Z'", true)]
+        public void DateTimeLessThanEqualToTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+        
+        [Test]
         [TestCase(".SubmittedOn>=.AuthorisedOn", true)]
         [TestCase(".AuthorisedOn>=.SubmittedOn", false)]
         [TestCase(".AuthorisedOn>=.ApprovedOn", true)]
