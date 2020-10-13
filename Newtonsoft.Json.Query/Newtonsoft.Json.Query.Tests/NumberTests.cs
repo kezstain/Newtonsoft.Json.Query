@@ -1,4 +1,6 @@
+using System;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Query.Exceptions;
 using NUnit.Framework;
 
 namespace Newtonsoft.Json.Query.Tests
@@ -16,6 +18,21 @@ namespace Newtonsoft.Json.Query.Tests
                 'MediumValue2': 2,
                 'HighValue': 3,
                 'NotAValue': 'NaN'}");
+        }
+
+        [Test]
+        [TestCase(".MediumValue*=.LowValue")]
+        public void ExpectedFeatureNotSupportedExceptionTests(string query)
+        {
+            try
+            {
+                _jObject.IsMatch(query);
+            }
+            catch (FeatureNotSupportedException)
+            {
+                Assert.Pass();
+            }
+            Assert.Fail();
         }
 
         [Test]

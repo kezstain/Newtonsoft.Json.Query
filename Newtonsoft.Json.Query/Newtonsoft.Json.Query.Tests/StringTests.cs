@@ -14,12 +14,26 @@ namespace Newtonsoft.Json.Query.Tests
                 'FirstName': 'Paul', 
                 'LastName': 'Kerry', 
                 'PreferredName': 'Paul', 
+                'FirstNameInitial': 'P',
+                'FirstNameMid': 'au',
+                'FirstNameEnd': 'l', 
                 'Age': 22}");
         }
         
         //"*=", //starts with
         //"?=", //ends with
         //"~=" //contains
+
+        [Test]
+        [TestCase(".FirstName*=.FirstNameInitial", true)] 
+        [TestCase(".FirstName*=.FirstNameMid", false)]
+        [TestCase(".FirstName*=.FirstNameEnd", false)] //matches
+        [TestCase(".FirstName*='P'", true)] 
+        [TestCase(".FirstName*='au'", false)]
+        [TestCase(".FirstName*='l'", false)]
+        //[TestCase(".FirstName>'adam'", true)] //case insensitive
+        //[TestCase(".FirstName>'zelda'", false)] //case insensitive
+        public void StringStartsWithTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 
         [Test]
         [TestCase(".FirstName<=.LastName", false)] 

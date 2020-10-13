@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Query.Exceptions;
 
 namespace Newtonsoft.Json.Query.TokenExpressions
 {
@@ -34,6 +35,13 @@ namespace Newtonsoft.Json.Query.TokenExpressions
                     return new JValue(left.CompareTo(right)<0);
                 case "<=":
                     return new JValue(left.CompareTo(right)<=0);
+                case "*=":
+                {
+                    if(left.Type!=JTokenType.String && right.Type!=JTokenType.String)
+                        throw new FeatureNotSupportedException(); //only support string to string starts with
+                    var startsWith = ((string) left).StartsWith((string) right);
+                    return new JValue(startsWith);
+                }
             }
             throw new NotImplementedException(_operation);
         }
