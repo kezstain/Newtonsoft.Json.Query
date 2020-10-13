@@ -16,9 +16,9 @@ namespace Newtonsoft.Json.Query
             "<=", //less than equal to
             ">=", //greater than equal to
             "!=", //not equal to
-            "*=", //starts with
-            "?=", //ends with
-            "~=" //contains
+            "^=", //starts with
+            "$=", //ends with
+            "*=" //contains
         };
 
         internal static IJObjectTokenExpression GetOperatorLogic(string query)

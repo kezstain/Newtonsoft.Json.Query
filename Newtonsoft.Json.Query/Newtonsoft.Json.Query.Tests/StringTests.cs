@@ -20,17 +20,40 @@ namespace Newtonsoft.Json.Query.Tests
                 'Age': 22}");
         }
         
-        //"*=", //starts with
-        //"?=", //ends with
-        //"~=" //contains
+        //"^=", //starts with
+        //"$=", //ends with
+        //"*=" //contains
 
         [Test]
         [TestCase(".FirstName*=.FirstNameInitial", true)] 
-        [TestCase(".FirstName*=.FirstNameMid", false)]
-        [TestCase(".FirstName*=.FirstNameEnd", false)] //matches
+        [TestCase(".FirstName*=.FirstNameMid", true)]
+        [TestCase(".FirstName*=.FirstNameEnd", true)] //matches
         [TestCase(".FirstName*='P'", true)] 
-        [TestCase(".FirstName*='au'", false)]
-        [TestCase(".FirstName*='l'", false)]
+        [TestCase(".FirstName*='au'", true)]
+        [TestCase(".FirstName*='l'", true)]
+        [TestCase(".FirstName*='z'", false)]
+        //[TestCase(".FirstName>'adam'", true)] //case insensitive
+        //[TestCase(".FirstName>'zelda'", false)] //case insensitive
+        public void StringContainsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+
+        [Test]
+        [TestCase(".FirstName$=.FirstNameInitial", false)] 
+        [TestCase(".FirstName$=.FirstNameMid", false)]
+        [TestCase(".FirstName$=.FirstNameEnd", true)] //matches
+        [TestCase(".FirstName$='P'", false)] 
+        [TestCase(".FirstName$='au'", false)]
+        [TestCase(".FirstName$='l'", true)]
+        //[TestCase(".FirstName>'adam'", true)] //case insensitive
+        //[TestCase(".FirstName>'zelda'", false)] //case insensitive
+        public void StringEndsWithTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+
+        [Test]
+        [TestCase(".FirstName^=.FirstNameInitial", true)] 
+        [TestCase(".FirstName^=.FirstNameMid", false)]
+        [TestCase(".FirstName^=.FirstNameEnd", false)] //matches
+        [TestCase(".FirstName^='P'", true)] 
+        [TestCase(".FirstName^='au'", false)]
+        [TestCase(".FirstName^='l'", false)]
         //[TestCase(".FirstName>'adam'", true)] //case insensitive
         //[TestCase(".FirstName>'zelda'", false)] //case insensitive
         public void StringStartsWithTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);

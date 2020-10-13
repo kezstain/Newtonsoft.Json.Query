@@ -21,7 +21,9 @@ namespace Newtonsoft.Json.Query.Tests
         }
 
         [Test]
+        [TestCase(".MediumValue^=.LowValue")]
         [TestCase(".MediumValue*=.LowValue")]
+        [TestCase(".MediumValue$=.LowValue")]
         public void ExpectedFeatureNotSupportedExceptionTests(string query)
         {
             try
