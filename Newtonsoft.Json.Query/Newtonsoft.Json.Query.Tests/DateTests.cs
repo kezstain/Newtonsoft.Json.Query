@@ -57,5 +57,13 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(".AuthorisedOn='2012-03-19T07:22Z'", true)]
         [TestCase(".AuthorisedOn='2012-04-19T07:22Z'", false)]
         public void DateTimeEqualsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+        
+        [Test]
+        [TestCase(".AuthorisedOn!=.ApprovedOn", false)]
+        [TestCase(".AuthorisedOn!=.SubmittedOn", true)]
+        [TestCase(".AuthorisedOn!=.LastName", true)]
+        [TestCase(".AuthorisedOn!='2012-03-19T07:22Z'", false)]
+        [TestCase(".AuthorisedOn!='2012-04-19T07:22Z'", true)]
+        public void DateTimeNotEqualsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
     }
 }

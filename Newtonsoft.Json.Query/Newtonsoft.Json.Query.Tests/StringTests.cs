@@ -17,10 +17,6 @@ namespace Newtonsoft.Json.Query.Tests
                 'Age': 22}");
         }
         
-        
-        //"<=", //less than equal to
-        //">=", //greater than equal to
-        //"!=", //not equal to
         //"*=", //starts with
         //"?=", //ends with
         //"~=" //contains
@@ -75,6 +71,14 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(".FirstName='Paul'", true)]
         [TestCase(".FirstName='Kerry'", false)]
         public void StringEqualsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+        
+        [Test]
+        [TestCase(".FirstName!=.PreferredName", false)]
+        [TestCase(".FirstName!=.LastName", true)]
+        [TestCase(".Age!=.LastName", true)]
+        [TestCase(".FirstName!='Paul'", false)]
+        [TestCase(".FirstName!='Kerry'", true)]
+        public void StringNotEqualsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
         
     }
 }

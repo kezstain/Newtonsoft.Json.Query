@@ -24,6 +24,8 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             {
                 case "=":
                     return new JValue(left.Equals(right));
+                case "!=":
+                    return new JValue(!left.Equals(right));
                 case ">":
                     return new JValue(left.CompareTo(right)>0);
                 case ">=":

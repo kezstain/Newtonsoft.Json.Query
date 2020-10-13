@@ -66,5 +66,14 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(".MediumValue=3", false)]
         public void IntEqualsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 
+        [Test]
+        [TestCase(".MediumValue!=.LowValue", true)]
+        [TestCase(".MediumValue!=.MediumValue2", false)]
+        [TestCase(".MediumValue!=.HighValue", true)]
+        [TestCase(".MediumValue!=1", true)]
+        [TestCase(".MediumValue!=2", false)]
+        [TestCase(".MediumValue!=3", true)]
+        public void IntNotEqualsTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+
     }
 }
