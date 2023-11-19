@@ -52,6 +52,7 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(".FirstName^=.FirstNameMid", false)]
         [TestCase(".FirstName^=.FirstNameEnd", false)] //matches
         [TestCase(".FirstName^='P'", true)] 
+        [TestCase(".FirstName^='p'", true)] 
         [TestCase(".FirstName^='au'", false)]
         [TestCase(".FirstName^='l'", false)]
         //[TestCase(".FirstName>'adam'", true)] //case insensitive
@@ -73,7 +74,7 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(".FirstName>=.LastName", true)] 
         [TestCase(".LastName>=.FirstName", false)]
         [TestCase(".FirstName>=.PreferredName", true)] //matches
-        //[TestCase(".FirstName>12", false)] //fails
+        [TestCase(".FirstName>12", true)] //fails
         [TestCase(".FirstName>='Adam'", true)]
         [TestCase(".FirstName>='Zelda'", false)]
         //[TestCase(".FirstName>'adam'", true)] //case insensitive

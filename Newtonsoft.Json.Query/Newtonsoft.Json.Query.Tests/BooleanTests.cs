@@ -20,6 +20,8 @@ namespace Newtonsoft.Json.Query.Tests
         
         [Test]
         [Category("Boolean Equals Tests")]
+        [TestCase(".Authorised", true)]
+        [TestCase(".Complete", false)]
         [TestCase(".Authorised=.Approved", true)]
         [TestCase(".Authorised=.Complete", false)]
         [TestCase(".Authorised=.LastName", false)]

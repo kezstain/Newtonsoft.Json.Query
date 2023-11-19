@@ -14,7 +14,7 @@ namespace Newtonsoft.Json.Query.Tests
                 'FirstName': 'Paul', 
                 'LastName': 'Kerry', 
                 'PreferredName': 'Paul', 
-                'Age': 22, 
+                'Age': 2, 
                 'BrotherAge': 22, 
                 'BabyAge': 1, 
                 'SisterAge': 25, 
@@ -41,15 +41,25 @@ namespace Newtonsoft.Json.Query.Tests
                 ]}");
         }
 
+        /*todo:
+        Add arithmetic routines
+        Add array functions
+        Work out array functions - should they be any or return matches 
+        .Hobbies.Sports['Football' | 'Golf'] to support & as well
+         */
 
-        //[Test]
+        [Test]
+        [TestCase(
+            @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+                (.Age>18 | (.Approved & .ApprovedBy != null))",
+            true)]
         //[TestCase(
-        //    @".Name='abcdef' & .ApprovedBy*='Joe' & 
+        //    @".Name='abcdef' & .ApprovedBy^='Joe' & 
         //        (.Age>18 | (.Approved & .ApprovedBy != null)) & 
         //        .Hobbies.Sports['Football' | 'Golf'] & 
-        //        .Scores[score=>score.PointsEarned=100] & Sum(.Scores[.PointsEarned])<=200",
+        //        Any(.Scores[score=>score.PointsEarned=100]) & Sum(.Scores[.PointsEarned])<=200",
         //    true)]
-        //public void WishListTest(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+        public void WishListTest(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 
     }
 }
