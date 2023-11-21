@@ -18,7 +18,7 @@ namespace Newtonsoft.Json.Query.TokenExpressions
                 _rightSideLogic = JObjectTokenExpressionBuilder.GetOperatorLogic(_argument);
             }
 
-            public JToken Evaluate(JObject jObject)
+            public JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
             {
                 throw new NotImplementedException();
             }

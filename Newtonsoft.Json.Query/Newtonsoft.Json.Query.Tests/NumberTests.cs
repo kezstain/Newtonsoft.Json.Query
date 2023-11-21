@@ -21,23 +21,6 @@ namespace Newtonsoft.Json.Query.Tests
         }
 
         [Test]
-        [TestCase(".MediumValue^=.LowValue")]
-        [TestCase(".MediumValue*=.LowValue")]
-        [TestCase(".MediumValue$=.LowValue")]
-        public void ExpectedFeatureNotSupportedExceptionTests(string query)
-        {
-            try
-            {
-                _jObject.IsMatch(query);
-            }
-            catch (FeatureNotSupportedException)
-            {
-                Assert.Pass();
-            }
-            Assert.Fail();
-        }
-
-        [Test]
         [TestCase(".MediumValue<=.LowValue", false)]
         [TestCase(".MediumValue<=.MediumValue2", true)]
         [TestCase(".MediumValue<=.HighValue", true)]

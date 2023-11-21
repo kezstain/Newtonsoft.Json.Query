@@ -25,74 +25,123 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             _rightSideLogic = JObjectTokenExpressionBuilder.GetOperatorLogic(rightSide);
         }
 
-        public JToken Evaluate(JObject jObject)
+        public JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
         {
             var left = (JValue)_leftSideLogic.Evaluate(jObject);
             var right = (JValue)_rightSideLogic.Evaluate(jObject);
-            //if(left==null && left)
+            var cultureInfo = stringComparison switch
+            {
+                StringComparison.InvariantCulture => CultureInfo.InvariantCulture,
+                StringComparison.InvariantCultureIgnoreCase => CultureInfo.InvariantCulture,
+                _ => CultureInfo.CurrentCulture
+            };
+            var compareOptions = stringComparison switch
+            {
+                StringComparison.CurrentCultureIgnoreCase => CompareOptions.IgnoreCase,
+                StringComparison.InvariantCultureIgnoreCase => CompareOptions.IgnoreCase,
+                StringComparison.Ordinal => CompareOptions.Ordinal,
+                StringComparison.OrdinalIgnoreCase => CompareOptions.OrdinalIgnoreCase,
+                _ => CompareOptions.None
+            };
 
             switch (_operation)
             {
                 case "&":
                     if (left.Type != JTokenType.Boolean && right.Type != JTokenType.Boolean)
-                        throw new InvalidQueryException("Boolean values expected",$"{_leftSide}{_operation}^{_rightSide}");
+                        throw new InvalidQueryException("Boolean values expected", $"{_leftSide}{_operation}^{_rightSide}");
                     return new JValue((bool)left && (bool)right);
                 case "|":
                     if (left.Type != JTokenType.Boolean && right.Type != JTokenType.Boolean)
-                        throw new InvalidQueryException("Boolean values expected",$"{_leftSide}{_operation}^{_rightSide}");
+                        throw new InvalidQueryException("Boolean values expected", $"{_leftSide}{_operation}^{_rightSide}");
                     return new JValue((bool)left || (bool)right);
                 case "=":
+                    if (left.Type == JTokenType.String || left.Type != right.Type)
+                    {
+                        var leftValue = left.Value?.ToString() ?? string.Empty;
+                        var rightValue = right.Value?.ToString() ?? string.Empty;
+                        
+                        return new JValue(leftValue.Equals(rightValue, stringComparison));
+                    }
                     return new JValue(left.Equals(right));
                 case "!=":
+                    if (left.Type == JTokenType.String || left.Type != right.Type)
+                    {
+                        var leftValue = left.Value?.ToString() ?? string.Empty;
+                        var rightValue = right.Value?.ToString() ?? string.Empty;
+                        
+                        return new JValue(!leftValue.Equals(rightValue, stringComparison));
+                    }
                     return new JValue(!left.Equals(right));
                 case ">":
-                    if (left.Type != right.Type)
+                    if (left.Type == JTokenType.String || left.Type != right.Type)
                     {
-                    
-                        using var leftSw = new StringWriter(CultureInfo.InvariantCulture);
-                        left.WriteTo(new JsonTextWriter(leftSw));
+                        var leftValue = left.Value?.ToString() ?? string.Empty;
+                        var rightValue = right.Value?.ToString() ?? string.Empty;
 
-                        using var rightSw = new StringWriter(CultureInfo.InvariantCulture);
-                        right.WriteTo(new JsonTextWriter(rightSw));
-
-                        return new JValue(leftSw.ToString().CompareTo(rightSw.ToString()));
-
+                        var comparison = string.Compare(leftValue, rightValue, cultureInfo, compareOptions);
+                        return new JValue(comparison > 0);
                     }
-                    return new JValue(left.CompareTo(right)>0);
+
+                    return new JValue(left.CompareTo(right) > 0);
                 case ">=":
-                    if (left.Type != right.Type)
-                        throw new InvalidQueryException("Boolean values expected",$"{_leftSide}{_operation}^{_rightSide}");
-                    return new JValue(left.CompareTo(right)>=0);
+                    if (left.Type == JTokenType.String || left.Type != right.Type)
+                    {
+                        var leftValue = left.Value?.ToString() ?? string.Empty;
+                        var rightValue = right.Value?.ToString() ?? string.Empty;
+
+                        var comparison = string.Compare(leftValue, rightValue, cultureInfo, compareOptions);
+                        return new JValue(comparison >= 0);
+                    }
+
+                    return new JValue(left.CompareTo(right) >= 0);
                 case "<":
-                    if (left.Type != right.Type)
-                        throw new InvalidQueryException("Boolean values expected",$"{_leftSide}{_operation}^{_rightSide}");
-                    return new JValue(left.CompareTo(right)<0);
+
+                    if (left.Type == JTokenType.String || left.Type != right.Type)
+                    {
+                        var leftValue = left.Value?.ToString() ?? string.Empty;
+                        var rightValue = right.Value?.ToString() ?? string.Empty;
+
+                        var comparison = string.Compare(leftValue, rightValue, cultureInfo, compareOptions);
+                        return new JValue(comparison < 0);
+                    }
+
+                    return new JValue(left.CompareTo(right) < 0);
                 case "<=":
-                    if (left.Type != right.Type)
-                        throw new InvalidQueryException("Boolean values expected",$"{_leftSide}{_operation}^{_rightSide}");
-                    return new JValue(left.CompareTo(right)<=0);
+
+                        if (left.Type == JTokenType.String || left.Type != right.Type)
+                        {
+                            var leftValue = left.Value?.ToString() ?? string.Empty;
+                            var rightValue = right.Value?.ToString() ?? string.Empty;
+
+                            var comparison = string.Compare(leftValue, rightValue, cultureInfo, compareOptions);
+                            return new JValue(comparison <= 0);
+                        }
+
+                    return new JValue(left.CompareTo(right) <= 0);
                 case "^=": //starts with
                 {
-                    if(left.Type!=JTokenType.String && right.Type!=JTokenType.String)
-                        throw new FeatureNotSupportedException(); //only support string to string starts with
-                    var startsWith = ((string) left).StartsWith((string) right);
+                    var leftValue = left.Value?.ToString() ?? string.Empty;
+                    var rightValue = right.Value?.ToString() ?? string.Empty;
+
+                    var startsWith = (leftValue).StartsWith(rightValue, stringComparison);
                     return new JValue(startsWith);
                 }
                 case "$=": //ends with
                 {
-                    if(left.Type!=JTokenType.String && right.Type!=JTokenType.String)
-                        throw new FeatureNotSupportedException(); //only support string to string starts with
-                    var startsWith = ((string) left).EndsWith((string) right);
-                    return new JValue(startsWith);
+                    var leftValue = left.Value?.ToString() ?? string.Empty;
+                    var rightValue = right.Value?.ToString() ?? string.Empty;
+                    var endsWith = (leftValue).EndsWith(rightValue, stringComparison);
+                    return new JValue(endsWith);
                 }
                 case "*=": //contains
                 {
                     var leftValue = left.Value?.ToString() ?? string.Empty;
                     var rightValue = right.Value?.ToString() ?? string.Empty;
-                    var startsWith = leftValue.Contains(rightValue);
+                    var startsWith = leftValue.Contains(rightValue, stringComparison);
                     return new JValue(startsWith);
                 }
             }
+
             throw new NotImplementedException(_operation);
         }
     }

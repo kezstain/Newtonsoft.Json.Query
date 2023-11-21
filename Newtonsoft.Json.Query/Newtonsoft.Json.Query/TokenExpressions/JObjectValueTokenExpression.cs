@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Newtonsoft.Json.Query.TokenExpressions
 {
@@ -11,7 +12,7 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             _query = query;
         }
 
-        public JToken Evaluate(JObject jObject)
+        public JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
         {
             if (_query.StartsWith("."))
             {
