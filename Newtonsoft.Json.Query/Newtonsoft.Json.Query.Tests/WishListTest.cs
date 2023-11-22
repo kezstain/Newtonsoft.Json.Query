@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(
             @".FirstName='Paul' & .ApprovedBy^='Joe' & 
                 (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
-                Any(.Hobbies.Sports[..='Football' | ..='Golf'])",
+                Any(.Hobbies.Sports[..='Footballss' | ..='Golf'])",
             true)]
         //[TestCase(
         //    @".FirstName='Paul' & .ApprovedBy^='Joe' & 

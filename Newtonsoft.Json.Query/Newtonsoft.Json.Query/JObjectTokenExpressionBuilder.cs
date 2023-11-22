@@ -25,11 +25,8 @@ namespace Newtonsoft.Json.Query
         {
             //clean the string
             query = query.Trim();
-            
-            if(query.StartsWith("(") && query.EndsWith(")") && query.LastIndexOf("(", StringComparison.InvariantCultureIgnoreCase) == 0)
-                query = query[new Range(1, query.Length - 1)];
-            if(query.StartsWith("[") && query.EndsWith("]") && query.LastIndexOf("[", StringComparison.InvariantCultureIgnoreCase) == 0)
-                query = query[new Range(1, query.Length - 1)];
+            query = EscapeClosingBracketPairs(query, '(', ')');
+            query = EscapeClosingBracketPairs(query, '[', ']');
 
             //if we find any & or | symbols split the string at this point and create logical operators
             if (ParseJObjectLogicalOperationTokenExpression(query, out var expression)) return expression;
@@ -48,6 +45,35 @@ namespace Newtonsoft.Json.Query
 
             //all else fails it must be low enough to be a value
             return new JObjectValueTokenExpression(query);
+        }
+
+        private static string EscapeClosingBracketPairs(string query, char openingChar, char closingChar)
+        {
+            if(query.Length<2) 
+                return query;
+            if(query[0]!=openingChar && query[..^1][0]!=closingChar) 
+                return query;
+
+            
+            var bracketCount = 0;
+            //split & | operators
+            for (var i = 0; i < query.Length-1; i++)
+            {
+                var charValue = query[i];
+
+                //check nesting
+                bracketCount += charValue == openingChar ? 1 : 0;
+                bracketCount -= charValue == closingChar ? 1 : 0;
+
+                //if we escase the brackets return
+                if (bracketCount == 0)
+                {
+                    return query;
+                }
+
+            }
+
+            return query[1..^1];
         }
 
         private static bool ParseJObjectLogicalOperationTokenExpression(string query, out IJObjectTokenExpression expression)
