@@ -49,31 +49,31 @@ namespace Newtonsoft.Json.Query
 
         private static string EscapeClosingBracketPairs(string query, char openingChar, char closingChar)
         {
-            if(query.Length<2) 
-                return query;
-            if(query[0]!=openingChar && query[..^1][0]!=closingChar) 
-                return query;
-
-            
-            var bracketCount = 0;
-            //split & | operators
-            for (var i = 0; i < query.Length-1; i++)
+            while (true)
             {
-                var charValue = query[i];
+                if (query.Length < 2) return query;
+                if (query[0] != openingChar && query[..^1][0] != closingChar) return query;
 
-                //check nesting
-                bracketCount += charValue == openingChar ? 1 : 0;
-                bracketCount -= charValue == closingChar ? 1 : 0;
 
-                //if we escase the brackets return
-                if (bracketCount == 0)
+                var bracketCount = 0;
+                //split & | operators
+                for (var i = 0; i < query.Length - 1; i++)
                 {
-                    return query;
+                    var charValue = query[i];
+
+                    //check nesting
+                    bracketCount += charValue == openingChar ? 1 : 0;
+                    bracketCount -= charValue == closingChar ? 1 : 0;
+
+                    //if we escase the brackets return
+                    if (bracketCount == 0)
+                    {
+                        return query;
+                    }
                 }
 
+                query = query[1..^1];
             }
-
-            return query[1..^1];
         }
 
         private static bool ParseJObjectLogicalOperationTokenExpression(string query, out IJObjectTokenExpression expression)

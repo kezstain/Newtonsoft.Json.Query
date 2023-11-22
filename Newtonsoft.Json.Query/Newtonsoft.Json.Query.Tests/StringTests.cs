@@ -147,6 +147,15 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(".FirstName!='paul'", StringComparison.InvariantCultureIgnoreCase, false)]
         [TestCase(".FirstName!='paul'", StringComparison.InvariantCulture, true)]
         public void StringNotEqualsCultureTests(string query, StringComparison stringComparison, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome, stringComparison);
+
+        
+        [Test]
+        [TestCase("(.FirstName!=(((.PreferredName))))", false)]
+        [TestCase("(.FirstName!=.LastName)", true)]
+        [TestCase("(.Age!=.LastName)", true)]
+        [TestCase("(.FirstName!='Paul')", false)]
+        [TestCase("(.FirstName!='Kerry')", true)]
+        public void BracketTests(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
         
     }
 }
