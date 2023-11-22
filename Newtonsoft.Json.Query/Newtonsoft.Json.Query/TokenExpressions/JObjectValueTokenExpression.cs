@@ -12,8 +12,17 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             _query = query;
         }
 
-        public JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
+        public JToken Evaluate(JToken jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
         {
+            if (_query.StartsWith(".."))
+            {
+                if (_query.Length <= 2) 
+                    return jObject;
+
+                var tokenPath = _query.Substring(2);
+                return jObject.SelectToken(tokenPath);
+            }
+
             if (_query.StartsWith("."))
             {
                 var tokenPath = _query.Substring(1);

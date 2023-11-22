@@ -6,9 +6,9 @@ namespace Newtonsoft.Json.Query
 {
     internal static class JObjectTokenExpressionBuilder
     {
-        private static readonly HashSet<char> Operators =new HashSet<char> { '&','|' };
+        private static readonly HashSet<char> Operators = new HashSet<char> { '&', '|' };
 
-        private static readonly HashSet<string> Comparators =new HashSet<string>
+        private static readonly HashSet<string> Comparators = new HashSet<string>
         {
             "=", //equal to
             ">", //greater than 
@@ -25,18 +25,24 @@ namespace Newtonsoft.Json.Query
         {
             //clean the string
             query = query.Trim();
-            if (query.StartsWith('(') && query.EndsWith(')') || query.StartsWith('[') && query.EndsWith(']'))
+            
+            if(query.StartsWith("(") && query.EndsWith(")") && query.LastIndexOf("(", StringComparison.InvariantCultureIgnoreCase) == 0)
+                query = query[new Range(1, query.Length - 1)];
+            if(query.StartsWith("[") && query.EndsWith("]") && query.LastIndexOf("[", StringComparison.InvariantCultureIgnoreCase) == 0)
                 query = query[new Range(1, query.Length - 1)];
 
             //if we find any & or | symbols split the string at this point and create logical operators
             if (ParseJObjectLogicalOperationTokenExpression(query, out var expression)) return expression;
 
+            if ((query.StartsWith('(') && query.EndsWith(')')) || (query.StartsWith('[') && query.EndsWith(']')))
+                query = query[new Range(1, query.Length - 1)];
+
             //now check to see if the string ends with a ")" which may be a method
             if (ParseJObjectMethodTokenExpression(query, out var operatorLogic)) return operatorLogic;
-            
+
             //now check to see if the string ends with a ")" which may be an array operation
             if (ParseJObjectArrayTokenExpression(query, out var jObjectArrayTokenExpression)) return jObjectArrayTokenExpression;
-            
+
             //finally check if we are doing any comparisons and return those
             if (ParseJObjectOperationTokenExpression(query, out var jObjectOperationTokenExpression)) return jObjectOperationTokenExpression;
 
@@ -52,6 +58,10 @@ namespace Newtonsoft.Json.Query
             //the value logic can then be used and evaluated in the same way
             var bracketCount = 0;
             var inArrayAction = 0;
+            char? currentOperator = null;
+            int splitAt = 0;
+
+
             //split & | operators
             for (var i = 0; i < query.Length; i++)
             {
@@ -64,15 +74,21 @@ namespace Newtonsoft.Json.Query
                 inArrayAction -= charValue == ']' ? 1 : 0;
 
                 //if its not a logic operator outside of brackets carry on
-                if (!Operators.Contains(charValue) || bracketCount != 0 || inArrayAction != 0) continue;
-
-                var l = query[new Range(0, i)];
-                var o = charValue.ToString();
-                var r = query[new Range(i + 1, query.Length)];
+                if (currentOperator == null && Operators.Contains(charValue) && bracketCount == 0 && inArrayAction == 0)
                 {
-                    expression = new JObjectOperationTokenExpression(l, o, r);
-                    return true;
+                    currentOperator = charValue;
+                    splitAt = i;
                 }
+
+                ;
+                if (currentOperator == null || bracketCount != 0 || inArrayAction != 0) continue;
+
+                var l = query[..splitAt].Trim();
+                var o = currentOperator.ToString();
+                var r = query[(splitAt+1)..].Trim();
+
+                expression = new JObjectOperationTokenExpression(l, o, r);
+                return true;
             }
 
             return false;
@@ -89,7 +105,7 @@ namespace Newtonsoft.Json.Query
                 if (Comparators.Contains(query.Substring(i, 2))) //check current and next char
                 {
                     {
-                        expression = new JObjectOperationTokenExpression(query.Substring(0, i), query.Substring(i, 2), query.Substring(i + 2));
+                        expression = new JObjectOperationTokenExpression(query[..i], query.Substring(i, 2), query[(i + 2)..]);
                         return true;
                     }
                 }
@@ -97,7 +113,7 @@ namespace Newtonsoft.Json.Query
                 if (Comparators.Contains(query.Substring(i, 1))) //check current and next char
                 {
                     {
-                        expression = new JObjectOperationTokenExpression(query.Substring(0, i), query.Substring(i, 1), query.Substring(i + 1));
+                        expression = new JObjectOperationTokenExpression(query[..i], query.Substring(i, 1), query[(i + 1)..]);
                         return true;
                     }
                 }
@@ -111,18 +127,16 @@ namespace Newtonsoft.Json.Query
             expression = null;
 
             //if it ends with a square bracket we know these have been trimmed from both ends so it must be an array method
-            if (!query.EndsWith("]")) 
+            if (!query.EndsWith("]"))
                 return false;
 
             var queryStart = query.IndexOf('[');
             if (queryStart > -1)
             {
-                var path = query[new Range(0, queryStart)];
-                var argument = query[new Range(queryStart, query.Length)];
-                {
-                    expression = new JObjectArrayTokenExpression(path, argument);
-                    return true;
-                }
+                var path = query[..queryStart];
+                var argument = query[queryStart..];
+                expression = new JObjectArrayTokenExpression(path, argument);
+                return true;
             }
 
             return false;
@@ -133,14 +147,13 @@ namespace Newtonsoft.Json.Query
         {
             expression = null;
             //if it ends with a round bracket we know these have been trimmed from both ends so it must be an array method
-            if (!query.EndsWith(")")) 
+            if (!query.EndsWith(")"))
                 return false;
 
-            var queryStart = query.IndexOf('(');
-            if (queryStart > -1)
+            if (query.StartsWith("Any("))
             {
-                var method = query[new Range(0, queryStart)];
-                var argument = query[new Range(queryStart, query.Length)];
+                var method = query[..3];
+                var argument = query[3..];
                 {
                     expression = new JObjectMethodTokenExpression(method, argument);
                     return true;

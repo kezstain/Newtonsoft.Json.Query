@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Query.Tests
 {
-    public class JObjectIsMatchTests : JObjectTestBase
+    public class WishlistTests : JObjectTestBase
     {
         private JObject _jObject;
 
@@ -14,7 +14,7 @@ namespace Newtonsoft.Json.Query.Tests
                 'FirstName': 'Paul', 
                 'LastName': 'Kerry', 
                 'PreferredName': 'Paul', 
-                'Age': 2, 
+                'Age': 22, 
                 'BrotherAge': 22, 
                 'BabyAge': 1, 
                 'SisterAge': 25, 
@@ -24,11 +24,12 @@ namespace Newtonsoft.Json.Query.Tests
                 'ApprovedOn':'2012-03-19T07:22Z',
                 'SubmittedOn':'2012-04-19T07:22Z',
                 'Complete':false,
-                'ApprovedBy':'Joe Smith', 
-                Hobbies:{
-                    Sports:['Football']
+                'ApprovedBy':'Joe Smith',
+                'ApprovedByNull':null, 
+                'Hobbies':{
+                    'Sports':['Football']
                 }, 
-                Scores:[
+                'Scores':[
                     {
                         PointsEarned:100
                     },
@@ -49,15 +50,34 @@ namespace Newtonsoft.Json.Query.Tests
          */
 
         [Test]
+        //[TestCase(
+        //    @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+        //        (.Age>18 | (.Approved & .ApprovedBy != null))",
+        //    true)]
+        //[TestCase(
+        //    @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+        //        (.Age>18 | (.Approved & .ApprovedByNull = null))",
+        //    true)]
+        //[TestCase(
+        //    @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+        //        (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
+        //        .Hobbies.Sports[..='Football' | ..='Golf']",
+        //    true)]
         [TestCase(
             @".FirstName='Paul' & .ApprovedBy^='Joe' & 
-                (.Age>18 | (.Approved & .ApprovedBy != null))",
+                (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
+                Any(.Hobbies.Sports[..='Football' | ..='Golf'])",
             true)]
+        //[TestCase(
+        //    @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+        //        (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
+        //        .Hobbies.Sports[..^='G' | ..$='l']",
+        //    true)]
         //[TestCase(
         //    @".Name='abcdef' & .ApprovedBy^='Joe' & 
         //        (.Age>18 | (.Approved & .ApprovedBy != null)) & 
-        //        .Hobbies.Sports['Football' | 'Golf'] & 
-        //        Any(.Scores[score=>score.PointsEarned=100]) & Sum(.Scores[.PointsEarned])<=200",
+        //        .Hobbies.Sports[..='Football' | ..='Golf'] & 
+        //        Any(.Scores[..PointsEarned=100]) & Sum(.Scores[..PointsEarned])<=200",
         //    true)]
         public void WishListTest(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
 

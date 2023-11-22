@@ -25,7 +25,7 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             _rightSideLogic = JObjectTokenExpressionBuilder.GetOperatorLogic(rightSide);
         }
 
-        public JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
+        public JToken Evaluate(JToken jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
         {
             var left = (JValue)_leftSideLogic.Evaluate(jObject);
             var right = (JValue)_rightSideLogic.Evaluate(jObject);
@@ -59,18 +59,20 @@ namespace Newtonsoft.Json.Query.TokenExpressions
                     {
                         var leftValue = left.Value?.ToString() ?? string.Empty;
                         var rightValue = right.Value?.ToString() ?? string.Empty;
-                        
+
                         return new JValue(leftValue.Equals(rightValue, stringComparison));
                     }
+
                     return new JValue(left.Equals(right));
                 case "!=":
                     if (left.Type == JTokenType.String || left.Type != right.Type)
                     {
                         var leftValue = left.Value?.ToString() ?? string.Empty;
                         var rightValue = right.Value?.ToString() ?? string.Empty;
-                        
+
                         return new JValue(!leftValue.Equals(rightValue, stringComparison));
                     }
+
                     return new JValue(!left.Equals(right));
                 case ">":
                     if (left.Type == JTokenType.String || left.Type != right.Type)
@@ -108,14 +110,14 @@ namespace Newtonsoft.Json.Query.TokenExpressions
                     return new JValue(left.CompareTo(right) < 0);
                 case "<=":
 
-                        if (left.Type == JTokenType.String || left.Type != right.Type)
-                        {
-                            var leftValue = left.Value?.ToString() ?? string.Empty;
-                            var rightValue = right.Value?.ToString() ?? string.Empty;
+                    if (left.Type == JTokenType.String || left.Type != right.Type)
+                    {
+                        var leftValue = left.Value?.ToString() ?? string.Empty;
+                        var rightValue = right.Value?.ToString() ?? string.Empty;
 
-                            var comparison = string.Compare(leftValue, rightValue, cultureInfo, compareOptions);
-                            return new JValue(comparison <= 0);
-                        }
+                        var comparison = string.Compare(leftValue, rightValue, cultureInfo, compareOptions);
+                        return new JValue(comparison <= 0);
+                    }
 
                     return new JValue(left.CompareTo(right) <= 0);
                 case "^=": //starts with

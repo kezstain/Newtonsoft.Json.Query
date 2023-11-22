@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Query.TokenExpressions
@@ -18,8 +19,14 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             _rightSideLogic = JObjectTokenExpressionBuilder.GetOperatorLogic(_argument);
         }
 
-        public JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
+        public JToken Evaluate(JToken jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
         {
+            if (_method == "Any")
+            {
+                var result = (JArray)_rightSideLogic.Evaluate(jObject, stringComparison) ?? throw new InvalidOperationException();
+                return new JValue(result.Any());
+            }
+
             throw new NotImplementedException();
         }
     }

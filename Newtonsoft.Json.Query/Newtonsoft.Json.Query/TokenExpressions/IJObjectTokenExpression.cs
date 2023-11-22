@@ -5,6 +5,6 @@ namespace Newtonsoft.Json.Query.TokenExpressions
 {
     public interface IJObjectTokenExpression
     {
-        JToken Evaluate(JObject jObject, StringComparison stringComparison = StringComparison.CurrentCulture);
+        JToken Evaluate(JToken jObject, StringComparison stringComparison = StringComparison.CurrentCulture);
     }
 }
