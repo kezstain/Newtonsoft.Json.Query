@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Query.Exceptions;
 
@@ -11,24 +8,20 @@ namespace Newtonsoft.Json.Query.TokenExpressions
     internal class JObjectOperationTokenExpression : IJObjectTokenExpression
     {
         private readonly IJObjectTokenExpression _leftSideLogic;
-        private readonly string _leftSide;
         private readonly string _operation;
-        private readonly string _rightSide;
         private readonly IJObjectTokenExpression _rightSideLogic;
 
-        public JObjectOperationTokenExpression(string leftSide, string operation, string rightSide)
+        public JObjectOperationTokenExpression(ReadOnlySpan<char> leftSide, ReadOnlySpan<char> operation, ReadOnlySpan<char> rightSide)
         {
             _leftSideLogic = JObjectTokenExpressionBuilder.GetOperatorLogic(leftSide);
-            _leftSide = leftSide;
-            _operation = operation;
-            _rightSide = rightSide;
+            _operation = operation.ToString();
             _rightSideLogic = JObjectTokenExpressionBuilder.GetOperatorLogic(rightSide);
         }
 
         public JToken Evaluate(JToken jObject, StringComparison stringComparison = StringComparison.CurrentCulture)
         {
-            var left = (JValue)_leftSideLogic.Evaluate(jObject);
-            var right = (JValue)_rightSideLogic.Evaluate(jObject);
+            var left = (JValue)_leftSideLogic.Evaluate(jObject, stringComparison);
+            var right = (JValue)_rightSideLogic.Evaluate(jObject, stringComparison);
             var cultureInfo = stringComparison switch
             {
                 StringComparison.InvariantCulture => CultureInfo.InvariantCulture,
@@ -48,11 +41,11 @@ namespace Newtonsoft.Json.Query.TokenExpressions
             {
                 case "&":
                     if (left.Type != JTokenType.Boolean && right.Type != JTokenType.Boolean)
-                        throw new InvalidQueryException("Boolean values expected", $"{_leftSide}{_operation}^{_rightSide}");
+                        throw new InvalidQueryException("Boolean values expected", $"{_leftSideLogic}{_operation}^{_rightSideLogic}");
                     return new JValue((bool)left && (bool)right);
                 case "|":
                     if (left.Type != JTokenType.Boolean && right.Type != JTokenType.Boolean)
-                        throw new InvalidQueryException("Boolean values expected", $"{_leftSide}{_operation}^{_rightSide}");
+                        throw new InvalidQueryException("Boolean values expected", $"{_leftSideLogic}{_operation}^{_rightSideLogic}");
                     return new JValue((bool)left || (bool)right);
                 case "=":
                     if (left.Type == JTokenType.String || left.Type != right.Type)

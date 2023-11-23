@@ -7,9 +7,9 @@ namespace Newtonsoft.Json.Query.TokenExpressions
     {
         private readonly string _query;
 
-        public JObjectValueTokenExpression(string query)
+        public JObjectValueTokenExpression(ReadOnlySpan<char> query)
         {
-            _query = query;
+            _query = query.ToString();
         }
 
         public JToken Evaluate(JToken jObject, StringComparison stringComparison = StringComparison.CurrentCulture)

@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -66,20 +67,30 @@ namespace Newtonsoft.Json.Query.Tests
         [TestCase(
             @".FirstName='Paul' & .ApprovedBy^='Joe' & 
                 (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
-                Any(.Hobbies.Sports[..='Footballss' | ..='Golf'])",
+                Any(.Hobbies.Sports[..$='l' | ..='Golf'])",
             true)]
-        //[TestCase(
-        //    @".FirstName='Paul' & .ApprovedBy^='Joe' & 
-        //        (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
-        //        .Hobbies.Sports[..^='G' | ..$='l']",
-        //    true)]
-        //[TestCase(
-        //    @".Name='abcdef' & .ApprovedBy^='Joe' & 
-        //        (.Age>18 | (.Approved & .ApprovedBy != null)) & 
-        //        .Hobbies.Sports[..='Football' | ..='Golf'] & 
-        //        Any(.Scores[..PointsEarned=100]) & Sum(.Scores[..PointsEarned])<=200",
-        //    true)]
-        public void WishListTest(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome);
+        [TestCase(
+            @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+                (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
+                Any(.Hobbies.Sports[..='Football' | ..='Golf'])",
+            true)]
+        [TestCase(
+            @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+                (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
+                Any(.Hobbies.Sports[..^='f' | ..='Golf'])",
+            true)]
+        [TestCase(
+            @".FirstName='Paul' & .ApprovedBy^='Joe' & 
+                (.Age>18 | (.Approved & .ApprovedByNull = null)) & 
+                Any(.Hobbies.Sports[..^='G' | ..$='l'])",
+            true)]
+        [TestCase(
+            @".Name='abcdef' & .ApprovedBy^='Joe' & 
+                (.Age>18 | (.Approved & .ApprovedBy != null)) & 
+                .Hobbies.Sports[..='Football' | ..='Golf'] & 
+                Any(.Scores[..PointsEarned=100]) & Sum(.Scores[..PointsEarned])<=200",
+            true)]
+        public void WishListTest(string query, bool expectedOutcome) => TestIsMatch(_jObject, query, expectedOutcome, StringComparison.InvariantCultureIgnoreCase);
 
     }
 }
